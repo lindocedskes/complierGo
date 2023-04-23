@@ -9,6 +9,7 @@ import (
 const ( //数字作为常量池的索引
 	//iota将定义常量（操作码）按递增赋予int初值
 	OpConstant Opcode = iota //指令——生成常量池索引：OpConstant int数字
+	OpAdd
 )
 
 type Instructions []byte //编译后存字节的集合
@@ -22,6 +23,7 @@ type Definition struct {
 // 操作码byte->操作码类型信息 映射
 var definitions = map[Opcode]*Definition{
 	OpConstant: {"OpConstant", []int{2}}, //操作码的名字和每个操作数占用2个字节
+	OpAdd:      {"OpAdd", []int{}},
 }
 
 // 通过字节码op查找对应操作码，返回该操作码struct类
@@ -34,9 +36,9 @@ func Lookup(op byte) (*Definition, error) {
 	return def, nil
 }
 
-// 返回操作码 操作数... 编译后的字节流，第一个字节必对应操作码，后面为操作数
+// 返回操作码00000000 操作数... 编译后的字节流，第一个字节必对应操作码，后面为操作数，operands是操作数对象的在常量池的索引int
 func Make(op Opcode, operands ...int) []byte {
-	def, ok := definitions[op] //返回操作码类型信息
+	def, ok := definitions[op] //返回byte对应的操作码类型信息，字节->指令
 	if !ok {
 		return []byte{}
 	}
@@ -112,6 +114,8 @@ func (ins Instructions) fmtInstruction(def *Definition, operands []int) string {
 	}
 
 	switch operandCount { //操作数个数
+	case 0:
+		return def.Name
 	case 1: //格式化输出一个参数的指令名+操作数int
 		return fmt.Sprintf("%s %d", def.Name, operands[0])
 	}

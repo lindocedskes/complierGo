@@ -11,6 +11,7 @@ func TestMake(t *testing.T) {
 		expected []byte //期望make后的值
 	}{
 		{OpConstant, []int{65534}, []byte{byte(OpConstant), 255, 254}},
+		{OpAdd, []int{}, []byte{byte(OpAdd)}}, //没有操作数
 	}
 	for _, tt := range tests {
 		instruction := Make(tt.op, tt.operands...) //返回3个字节，第一个操作码，2和3为数字的大端存储
@@ -31,8 +32,8 @@ func TestMake(t *testing.T) {
 // 打印信息字节码转易读的内容（反汇编）
 func TestInstructionsString(t *testing.T) {
 	instructions := []Instructions{
-		Make(OpConstant, 1), //[0x00, 0x01]
-		Make(OpConstant, 2),
+		Make(OpAdd),
+		Make(OpConstant, 2), //[0x00, 0x02]
 		Make(OpConstant, 65535),
 	}
 

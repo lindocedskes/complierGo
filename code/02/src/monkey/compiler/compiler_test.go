@@ -25,6 +25,7 @@ func TestIntegerArithmetic(t *testing.T) {
 			expectedInsttuctions: []code.Instructions{ //字节流切片的切片
 				code.Make(code.OpConstant, 0), //OpConstant int整数 ->
 				code.Make(code.OpConstant, 1),
+				code.Make(code.OpAdd), //将栈中2个add
 			},
 		},
 	}
@@ -41,7 +42,7 @@ func runCompilerTest(t *testing.T, tests []compilerTestCase) {
 		program := parse(tt.input) //词法分析、语法分析返回AST
 
 		compiler := New()
-		err := compiler.Compiler(program) //编译器编译
+		err := compiler.Compile(program) //编译器编译
 		if err != nil {
 			t.Fatalf("compiler error: %s", err)
 		}
